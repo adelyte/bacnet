@@ -291,6 +291,50 @@ func (c *Client) ReadProperty(ctx context.Context, device bacnet.Device, readPro
 	}
 }
 
+func (c *Client) WriteProperty(ctx context.Context, device bacnet.Device, writeProp WriteProperty) (interface{}, error) {
+	invokeID := c.transactions.GetID()
+	defer c.transactions.FreeID(invokeID)
+	npdu := NPDU{
+		Version:               Version1,
+		IsNetworkLayerMessage: false,
+		ExpectingReply:        true,
+		Priority:              Normal,
+		Destination:           &device.Addr,
+		Source: bacnet.AddressFromUDP(net.UDPAddr{
+			IP:   c.ipAdress,
+			Port: c.udpPort,
+		}),
+		HopCount: 255,
+		ADPU: &APDU{
+			DataType:    ConfirmedServiceRequest,
+			ServiceType: ServiceConfirmedWriteProperty,
+			InvokeID:    invokeID,
+			Payload:     &writeProp,
+		},
+	}
+	rChan := make(chan APDU)
+	c.transactions.SetTransaction(invokeID, rChan, ctx)
+	defer c.transactions.StopTransaction(invokeID)
+	_, err := c.send(npdu)
+	if err != nil {
+		return nil, err
+	}
+	select {
+	case apdu := <-rChan:
+		//Todo: ensure response validity, ensure conversion cannot panic
+		if apdu.DataType == Error {
+			return nil, *apdu.Payload.(*ApduError)
+		}
+		if apdu.DataType == ComplexAck && apdu.ServiceType == ServiceConfirmedWriteProperty {
+			data := apdu.Payload.(*ReadProperty).Data
+			return data, nil
+		}
+		return nil, errors.New("invalid answer")
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+}
+
 func (c *Client) send(npdu NPDU) (int, error) {
 	bytes, err := BVLC{
 		Type:     TypeBacnetIP,

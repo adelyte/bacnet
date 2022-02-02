@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/REQUEA/bacnet"
+	"github.com/octahemo/bacnet"
 )
 
 type Client struct {

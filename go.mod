@@ -1,4 +1,4 @@
-module github.com/REQUEA/bacnet
+module github.com/octahemo/bacnet
 
 go 1.16
 

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/REQUEA/bacnet"
-	"github.com/REQUEA/bacnet/internal/encoding"
+	"github.com/octahemo/bacnet"
+	"github.com/octahemo/bacnet/internal/encoding"
 )
 
 type WhoIs struct {

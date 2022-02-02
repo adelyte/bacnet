@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/REQUEA/bacnet"
+	"github.com/octahemo/bacnet"
 )
 
 //Decoder is the struct used to turn byte arrays to bacnet types. All

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/REQUEA/bacnet"
+	"github.com/octahemo/bacnet"
 
 	"github.com/matryer/is"
 )

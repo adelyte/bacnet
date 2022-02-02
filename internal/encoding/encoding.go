@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/REQUEA/bacnet"
+	"github.com/octahemo/bacnet"
 )
 
 const (

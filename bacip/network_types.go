@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/REQUEA/bacnet"
+	"github.com/octahemo/bacnet"
 )
 
 type Version byte

@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/octahemo/bacnet"
+	"controlenvy.com/bacnet"
 )
 
 const (
@@ -38,15 +38,15 @@ func (e *Encoder) Bytes() []byte {
 	return e.buf.Bytes()
 }
 
-//ContextUnsigned write a (context)tag / value pair where the value
+//ContextUnsigned write a (context) tag / value pair where the value
 //type is an unsigned int
-func (e *Encoder) ContextUnsigned(tabNumber byte, value uint32) {
+func (e *Encoder) ContextUnsigned(tagNumber byte, value uint32) {
 	if e.err != nil {
 		return
 	}
 	length := valueLength(value)
 	t := tag{
-		ID:      tabNumber,
+		ID:      tagNumber,
 		Context: true,
 		Value:   uint32(length),
 		Opening: false,
@@ -79,7 +79,7 @@ func (e *Encoder) ContextObjectID(tabNumber byte, objectID bacnet.ObjectID) {
 }
 
 //AppData writes a tag and value of any standard bacnet application
-//data type. Returns an error if v if of a invalid type
+//data type. Returns an error if v of an invalid type
 func (e *Encoder) AppData(v interface{}) {
 	if e.err != nil {
 		return
@@ -90,7 +90,17 @@ func (e *Encoder) AppData(v interface{}) {
 		return
 	}
 	switch val := v.(type) {
-	case float64, bool:
+	case bool:
+		var t tag
+		if val {
+			t = tag{ID: applicationTagBoolean, Value: 0b001}
+		} else {
+			t = tag{ID: applicationTagBoolean, Value: 0b000}
+		}
+		fmt.Printf("AppData() encoding bool %v\n", val)
+		encodeTag(e.buf, t)
+		_ = binary.Write(e.buf, binary.BigEndian, val)
+	case float64:
 		e.err = fmt.Errorf("not implemented ")
 	case float32:
 		t := tag{ID: applicationTagReal, Value: 4}
@@ -127,16 +137,25 @@ func (e *Encoder) AppData(v interface{}) {
 	}
 }
 
-func (e *Encoder) ContextAsbtractType(tabNumber byte, v bacnet.PropertyValue) {
-	encodeTag(e.buf, tag{ID: tabNumber, Context: true, Opening: true})
+func (e *Encoder) ContextAbstractType(tagNumber byte, v bacnet.PropertyValue) {
+	encodeTag(e.buf, tag{ID: tagNumber, Context: true, Opening: true})
 	length := valueLength(v.Value)
-	t := tag{ID: v.Type, Value: uint32(length)}
-	encodeTag(e.buf, t)
+
+	// t := tag{ID: v.Type, Value: uint32(length)}
+	if v.Type == 0x01 {
+		// t := tagNumber<<4 | 0b0000_1001
+		t := byte(0b1001_0001)
+		e.buf.WriteByte(t)
+	} else {
+		t := tag{ID: v.Type, Value: uint32(length)}
+		encodeTag(e.buf, t)
+	}
+
 	unsigned(e.buf, v.Value)
-	encodeTag(e.buf, tag{ID: tabNumber, Context: true, Closing: true})
+	encodeTag(e.buf, tag{ID: tagNumber, Context: true, Closing: true})
 }
 
-// valueLength caclulates how large the necessary value needs to be to fit in the appropriate
+// valueLength calculates how large the necessary value needs to be to fit in the appropriate
 // packet length
 func valueLength(value uint32) int {
 	/* length of enumerated is variable, as per 20.2.11 */
@@ -150,7 +169,7 @@ func valueLength(value uint32) int {
 	return 4
 }
 
-//unsigned writes the value in the buffer using a variabled-sized encoding
+//unsigned writes the value in the buffer using a variable-sized encoding
 func unsigned(buf *bytes.Buffer, value uint32) int {
 	switch {
 	case value < 0x100:

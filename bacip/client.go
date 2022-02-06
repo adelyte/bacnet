@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/octahemo/bacnet"
+	"controlenvy.com/bacnet"
 )
 
 type Client struct {
@@ -131,7 +131,7 @@ func (c *Client) handleMessage(src *net.UDPAddr, b []byte) error {
 	if err != nil && errors.Is(err, ErrNotBAcnetIP) {
 		return err
 	}
-	apdu := bvlc.NPDU.ADPU
+	apdu := bvlc.NPDU.APDU
 	if apdu == nil {
 		c.Logger.Info(fmt.Sprintf("Received network packet %+v", bvlc.NPDU))
 		return nil
@@ -143,7 +143,7 @@ func (c *Client) handleMessage(src *net.UDPAddr, b []byte) error {
 	}
 	c.subscriptions.RUnlock()
 	if apdu.DataType == ComplexAck || apdu.DataType == Error {
-		invokeID := bvlc.NPDU.ADPU.InvokeID
+		invokeID := bvlc.NPDU.APDU.InvokeID
 		tx, ok := c.transactions.GetTransaction(invokeID)
 		if !ok {
 			return fmt.Errorf("no transaction found for id %d", invokeID)
@@ -167,7 +167,7 @@ func (c *Client) WhoIs(data WhoIs, timeout time.Duration) ([]bacnet.Device, erro
 		Priority:              Normal,
 		Destination:           nil,
 		Source:                nil,
-		ADPU: &APDU{
+		APDU: &APDU{
 			DataType:    UnconfirmedServiceRequest,
 			ServiceType: ServiceUnconfirmedWhoIs,
 			Payload:     &data,
@@ -217,7 +217,7 @@ func (c *Client) WhoIs(data WhoIs, timeout time.Duration) ([]bacnet.Device, erro
 			return result, nil
 		case r := <-rChan:
 			//clean/filter  network answers here
-			apdu := r.bvlc.NPDU.ADPU
+			apdu := r.bvlc.NPDU.APDU
 			if apdu != nil {
 				if apdu.DataType == UnconfirmedServiceRequest &&
 					apdu.ServiceType == ServiceUnconfirmedIAm {
@@ -261,7 +261,7 @@ func (c *Client) ReadProperty(ctx context.Context, device bacnet.Device, readPro
 			Port: c.udpPort,
 		}),
 		HopCount: 255,
-		ADPU: &APDU{
+		APDU: &APDU{
 			DataType:    ConfirmedServiceRequest,
 			ServiceType: ServiceConfirmedReadProperty,
 			InvokeID:    invokeID,
@@ -305,7 +305,7 @@ func (c *Client) WriteProperty(ctx context.Context, device bacnet.Device, writeP
 			Port: c.udpPort,
 		}),
 		HopCount: 255,
-		ADPU: &APDU{
+		APDU: &APDU{
 			DataType:    ConfirmedServiceRequest,
 			ServiceType: ServiceConfirmedWriteProperty,
 			InvokeID:    invokeID,
@@ -348,6 +348,7 @@ func (c *Client) send(npdu NPDU) (int, error) {
 		return 0, fmt.Errorf("destination bacnet address should be not nil to send unicast")
 	}
 	addr := bacnet.UDPFromAddress(*npdu.Destination)
+
 	return c.udp.WriteToUDP(bytes, &addr)
 
 }

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/octahemo/bacnet"
+	"controlenvy.com/bacnet"
 )
 
 //Decoder is the struct used to turn byte arrays to bacnet types. All
@@ -34,7 +34,7 @@ func (d *Decoder) ResetError() {
 	d.err = nil
 }
 
-//unread unread the last n bytes read from the decoder. This allows to retry decoding of the same data
+//unread returns the last n bytes read from the decoder. This allows to retry decoding of the same data
 func (d *Decoder) unread(n int) error {
 	for x := 0; x < n; x++ {
 		err := d.buf.UnreadByte()
@@ -143,6 +143,22 @@ func (d *Decoder) AppData(v interface{}) {
 	switch tag.ID {
 	case applicationTagNull:
 		//nothing to do
+	case applicationTagBoolean:
+		var val bool
+		switch tag.Value {
+		case 0b001:
+			val = true
+		case 0b000:
+			val = false
+		default:
+			d.err = fmt.Errorf("decodeAppData: read ObjectID: invalid tag value %03b", tag.Value)
+			return
+		}
+		if rv.Kind() != reflect.Bool && !isEmptyInterface(rv) {
+			d.err = AppDataTypeMismatch{wanted: "Bool", got: rv.Type()}
+			return
+		}
+		rv.Set(reflect.ValueOf(val))
 	case applicationTagUnsignedInt:
 		val, err := decodeUnsignedWithLen(d.buf, int(tag.Value))
 		if err != nil {

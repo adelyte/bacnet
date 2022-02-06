@@ -1,5 +1,5 @@
 # Bacnet
-[![Go Reference](https://pkg.go.dev/badge/github.com/REQUEA/bacnet.svg)](https://pkg.go.dev/github.com/REQUEA/bacnet)
+[![Go Reference](https://pkg.go.dev/badge/controlenvy.com/bacnet.svg)](https://pkg.go.dev/controlenvy.com/bacnet)
 
 bacnet is a minimal Bacnet over IP implementation in pure go with zero dependencies. 
 

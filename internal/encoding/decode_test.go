@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/octahemo/bacnet"
+	"controlenvy.com/bacnet"
 
 	"github.com/matryer/is"
 )
@@ -16,6 +16,14 @@ func TestValidAppData(t *testing.T) {
 		expected    interface{}
 		expectedBis interface{} //nil if same as one
 	}{
+		{
+			data:     "11",
+			expected: true,
+		},
+		{
+			data:     "10",
+			expected: false,
+		},
 		{
 			data: "c4020075e9",
 			expected: bacnet.ObjectID{
@@ -57,6 +65,11 @@ func TestValidAppData(t *testing.T) {
 			decoder := NewDecoder(b)
 			//Ensure that it work when passed the concrete type
 			switch tc.expected.(type) {
+			case bool:
+				var x bool
+				decoder.AppData(&x)
+				is.NoErr(decoder.err)
+				is.Equal(x, tc.expected)
 			case bacnet.ObjectID:
 				x := bacnet.ObjectID{}
 				decoder.AppData(&x)

@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/octahemo/bacnet"
+	"controlenvy.com/bacnet"
 
 	"github.com/matryer/is"
 )
@@ -23,7 +23,7 @@ func TestFullEncodingAndCoherency(t *testing.T) {
 					IsNetworkLayerMessage: false,
 					ExpectingReply:        false,
 					Priority:              Normal,
-					ADPU: &APDU{
+					APDU: &APDU{
 						DataType:    UnconfirmedServiceRequest,
 						ServiceType: ServiceUnconfirmedWhoIs,
 						Payload:     &WhoIs{},
@@ -47,7 +47,7 @@ func TestFullEncodingAndCoherency(t *testing.T) {
 					},
 					Source:   &bacnet.Address{},
 					HopCount: 255,
-					ADPU: &APDU{
+					APDU: &APDU{
 						DataType:    UnconfirmedServiceRequest,
 						ServiceType: ServiceUnconfirmedIAm,
 						Payload: &Iam{

@@ -68,13 +68,13 @@ func isContextSpecific(x byte) bool {
 func encodeTag(buf *bytes.Buffer, t tag) {
 	var tagMeta byte
 	if t.Context {
-		tagMeta |= 0x8
+		tagMeta |= 0x08
 	}
 	if t.Opening {
-		tagMeta |= 0x6
+		tagMeta |= 0x06
 	}
 	if t.Closing {
-		tagMeta |= 0x7
+		tagMeta |= 0x07
 	}
 	if t.Value <= 4 {
 		tagMeta |= byte(t.Value)

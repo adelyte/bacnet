@@ -1,4 +1,4 @@
-module github.com/octahemo/bacnet
+module controlenvy.com/bacnet
 
 go 1.16
 

@@ -1,3 +1,5 @@
+controlenvy.com/bacnet v0.0.0-20210914141310-25d832fb4b23 h1:xndnvB1FdjeZymqWV7Vzx2sHI8q0V846D0dQDIbgvNg=
+controlenvy.com/bacnet v0.0.0-20210914141310-25d832fb4b23/go.mod h1:jqAllwnEA0K7mk3PVJr1Rh5vmg8ZJjQCUJTyoHC/zVk=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=

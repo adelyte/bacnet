@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/octahemo/bacnet"
+	"controlenvy.com/bacnet"
 
 	"github.com/matryer/is"
 )

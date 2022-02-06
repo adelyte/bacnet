@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/octahemo/bacnet"
+	"controlenvy.com/bacnet"
 )
 
 type Version byte
@@ -37,7 +37,7 @@ type NPDU struct {
 	NetworkMessageType byte
 	VendorID           uint16
 
-	ADPU *APDU
+	APDU *APDU
 }
 
 func (npdu NPDU) MarshalBinary() ([]byte, error) {
@@ -85,8 +85,8 @@ func (npdu NPDU) MarshalBinary() ([]byte, error) {
 		}
 	}
 	bytes := b.Bytes()
-	if npdu.ADPU != nil {
-		bytesapdu, err := npdu.ADPU.MarshalBinary()
+	if npdu.APDU != nil {
+		bytesapdu, err := npdu.APDU.MarshalBinary()
 		if err != nil {
 			return nil, err
 		}
@@ -171,8 +171,8 @@ func (npdu *NPDU) UnmarshallBinary(data []byte) error {
 			}
 		}
 	} else {
-		npdu.ADPU = &APDU{}
-		return npdu.ADPU.UnmarshalBinary(buf.Bytes())
+		npdu.APDU = &APDU{}
+		return npdu.APDU.UnmarshalBinary(buf.Bytes())
 
 	}
 	return nil

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/octahemo/bacnet"
-	"github.com/octahemo/bacnet/internal/encoding"
+	"controlenvy.com/bacnet"
+	"controlenvy.com/bacnet/internal/encoding"
 )
 
 type WhoIs struct {
@@ -113,13 +113,18 @@ func (wp WriteProperty) MarshalBinary() ([]byte, error) {
 	encoder := encoding.NewEncoder()
 	encoder.ContextObjectID(0, wp.ObjectID)
 	encoder.ContextUnsigned(1, uint32(wp.Property.Type))
+
 	if wp.Property.ArrayIndex != nil {
 		encoder.ContextUnsigned(2, *wp.Property.ArrayIndex)
 	}
-	encoder.ContextAsbtractType(3, wp.PropertyValue)
+
+	encoder.ContextAbstractType(3, wp.PropertyValue)
 	if wp.Priority != 0 {
 		encoder.ContextUnsigned(4, uint32(wp.Priority))
 	}
+
+	fmt.Printf("MarshalBinary() bytes: %v, err: %v\n", encoder.Bytes(), encoder.Error())
+
 	return encoder.Bytes(), encoder.Error()
 }
 
